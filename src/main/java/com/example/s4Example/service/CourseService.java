@@ -17,7 +17,5 @@ public interface CourseService {
 
     Course editCourse(Long code, Course courseDetails) throws ResourceNotFoundException;
 
-    Map<String, Boolean> deleteCourse(Long code) throws ResourceNotFoundException;
-
-    Course addStudent(Student student, Long courseCode) throws ResourceNotFoundException;
+    Boolean deleteCourse(Long code) throws ResourceNotFoundException;
 }

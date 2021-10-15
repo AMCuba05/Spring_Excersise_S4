@@ -3,6 +3,8 @@ package com.example.s4Example.controller;
 import com.example.s4Example.exceptions.ResourceNotFoundException;
 import com.example.s4Example.model.Student;
 import com.example.s4Example.service.impl.StudentServiceImpl;
+
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.validation.Valid;
@@ -51,6 +53,8 @@ public class StudentController {
 
     @DeleteMapping({"students/{id}"})
     public Map<String, Boolean> deleteStudent(@PathVariable("id") Long studentId) throws ResourceNotFoundException {
-        return this.studentServiceImpl.deleteStudent(studentId);
+        Map<String, Boolean> response = new HashMap();
+        response.put("deleted",this.studentServiceImpl.deleteStudent(studentId));
+        return response;
     }
 }

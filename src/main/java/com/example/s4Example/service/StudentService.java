@@ -14,5 +14,5 @@ public interface StudentService {
 
     Student editStudent(Long studentId, Student studentDetails) throws ResourceNotFoundException;
 
-    Map<String, Boolean> deleteStudent(Long studentId) throws ResourceNotFoundException;
+    Boolean deleteStudent(Long studentId) throws ResourceNotFoundException;
 }

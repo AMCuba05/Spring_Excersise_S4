@@ -1,5 +1,6 @@
 package com.example.s4Example.service.impl;
 
+import com.example.s4Example.dto.StudentDTO;
 import com.example.s4Example.exceptions.ResourceNotFoundException;
 import com.example.s4Example.model.Course;
 import com.example.s4Example.model.Student;
@@ -9,9 +10,11 @@ import java.util.List;
 import java.util.Map;
 
 import com.example.s4Example.service.CourseService;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,6 +22,9 @@ public class CourseServiceImpl implements CourseService {
     private static final Logger log = LoggerFactory.getLogger(CourseServiceImpl.class);
     @Autowired
     private CourseRepository courseRepository;
+
+    @Autowired
+    private ModelMapper mapper;
 
     public CourseServiceImpl() {
     }
@@ -54,23 +60,12 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public Map<String, Boolean> deleteCourse(Long code) throws ResourceNotFoundException {
+    public Boolean deleteCourse(Long code) throws ResourceNotFoundException {
         Course course = (Course)this.courseRepository.findById(code).orElseThrow(() -> {
             return new ResourceNotFoundException("Class not found for code" + code);
         });
         this.courseRepository.delete(course);
-        Map<String, Boolean> response = new HashMap();
-        response.put("deleted", Boolean.TRUE);
-        return response;
+        return Boolean.TRUE;
     }
 
-    @Override
-    public Course addStudent(Student student, Long courseCode) throws ResourceNotFoundException{
-        Course course = (Course)this.courseRepository.findById(courseCode).orElseThrow(() -> {
-            return new ResourceNotFoundException("Class not found for code" + courseCode);
-        });
-        course.addStudent(student);
-        Course editedCourse = (Course)this.courseRepository.save(course);
-        return editedCourse;
-    }
 }

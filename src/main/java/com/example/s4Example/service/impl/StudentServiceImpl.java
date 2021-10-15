@@ -46,13 +46,11 @@ public class StudentServiceImpl implements StudentService {
         return editedStudent;
     }
 
-    public Map<String, Boolean> deleteStudent(Long studentId) throws ResourceNotFoundException {
+    public Boolean deleteStudent(Long studentId) throws ResourceNotFoundException {
         Student student = (Student)this.studentRepository.findById(studentId).orElseThrow(() -> {
             return new ResourceNotFoundException("Student not found for id: " + studentId);
         });
         this.studentRepository.delete(student);
-        Map<String, Boolean> response = new HashMap();
-        response.put("deleted", Boolean.TRUE);
-        return response;
+        return Boolean.TRUE;
     }
 }

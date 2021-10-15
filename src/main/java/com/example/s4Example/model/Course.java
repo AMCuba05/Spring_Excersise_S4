@@ -1,10 +1,8 @@
 package com.example.s4Example.model;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
-import com.example.s4Example.dto.StudentDTO;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.AllArgsConstructor;

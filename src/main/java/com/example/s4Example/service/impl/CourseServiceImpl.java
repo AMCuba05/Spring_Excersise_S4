@@ -1,20 +1,15 @@
 package com.example.s4Example.service.impl;
 
-import com.example.s4Example.dto.StudentDTO;
 import com.example.s4Example.exceptions.ResourceNotFoundException;
 import com.example.s4Example.model.Course;
-import com.example.s4Example.model.Student;
 import com.example.s4Example.repository.CourseRepository;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.example.s4Example.service.CourseService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Service

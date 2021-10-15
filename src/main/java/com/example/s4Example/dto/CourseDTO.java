@@ -1,6 +1,5 @@
 package com.example.s4Example.dto;
 
-import com.example.s4Example.model.Student;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

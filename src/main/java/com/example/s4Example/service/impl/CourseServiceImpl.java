@@ -6,23 +6,20 @@ import com.example.s4Example.repository.CourseRepository;
 import java.util.List;
 
 import com.example.s4Example.service.CourseService;
+import lombok.NoArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+@NoArgsConstructor
 @Service
 public class CourseServiceImpl implements CourseService {
-    private static final Logger log = LoggerFactory.getLogger(CourseServiceImpl.class);
+
     @Autowired
     private CourseRepository courseRepository;
 
     @Autowired
     private ModelMapper mapper;
-
-    public CourseServiceImpl() {
-    }
 
     @Override
     public List<Course> getAllCourses() {

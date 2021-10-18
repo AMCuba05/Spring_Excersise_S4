@@ -5,19 +5,17 @@ import com.example.s4Example.model.Student;
 import com.example.s4Example.repository.StudentRepository;
 import com.example.s4Example.service.StudentService;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+@NoArgsConstructor
 @Service
 public class StudentServiceImpl implements StudentService {
-    private static final Logger log = LoggerFactory.getLogger(StudentServiceImpl.class);
+
     @Autowired
     private StudentRepository studentRepository;
-
-    public StudentServiceImpl() {
-    }
 
     public List<Student> getAllStudents() {
         return this.studentRepository.findAll();

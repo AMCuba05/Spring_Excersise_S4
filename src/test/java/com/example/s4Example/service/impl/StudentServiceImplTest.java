@@ -3,15 +3,22 @@ package com.example.s4Example.service.impl;
 import com.example.s4Example.StudentMockData;
 import com.example.s4Example.exceptions.ResourceNotFoundException;
 import com.example.s4Example.model.Student;
+import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import static org.mockito.MockitoAnnotations.initMocks;
 
-@SpringBootTest
+import org.mockito.InjectMocks;
+
 public class StudentServiceImplTest {
-    @Autowired
+
+    @InjectMocks
     private StudentServiceImpl studentService;
+
+    @Before
+    public void before() {
+        initMocks(this);
+    }
 
     @Test
     public void testGetAllStudents(){

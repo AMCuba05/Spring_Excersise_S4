@@ -1,19 +1,25 @@
 package com.example.s4Example.service.impl;
 
 import com.example.s4Example.CourseMockData;
-import com.example.s4Example.StudentMockData;
 import com.example.s4Example.exceptions.ResourceNotFoundException;
 import com.example.s4Example.model.Course;
-import com.example.s4Example.model.Student;
+import com.example.s4Example.repository.CourseRepository;
+import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import static org.mockito.MockitoAnnotations.initMocks;
 
-@SpringBootTest
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+
 public class CourseServiceImplTest {
-    @Autowired
-    private CourseServiceImpl courseService;
+    @InjectMocks
+    protected CourseServiceImpl courseService;
+
+    @Before
+    public void before() {
+        initMocks(this);
+    }
 
     @Test
     public void testGetAllCourses() throws ResourceNotFoundException{

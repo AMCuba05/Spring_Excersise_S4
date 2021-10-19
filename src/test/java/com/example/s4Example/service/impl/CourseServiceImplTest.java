@@ -80,19 +80,17 @@ public class CourseServiceImplTest {
 
         when(courseRepository.findById(course.getCode())).thenReturn(Optional.of(course));
 
-        Course courseSaved = courseService.getCourseByCode(course.getCode());
+        course.setTitle("new title");
+        course.setDescription("new description");
+        course.setStudents(new ArrayList<>());
 
-        courseSaved.setTitle("new title");
-        courseSaved.setDescription("new description");
-        courseSaved.setStudents(new ArrayList<>());
+        when(courseRepository.save(course)).thenReturn(course);
 
-        when(courseRepository.save(courseSaved)).thenReturn(courseSaved);
+        Course editedCourse = courseService.editCourse( course.getCode(),course);
 
-        Course editedCourse = courseService.editCourse( courseSaved.getCode(),courseSaved);
-
-        assertEquals(editedCourse.getTitle(), courseSaved.getTitle());
-        assertEquals(editedCourse.getDescription(), courseSaved.getDescription());
-        assertEquals(editedCourse.getStudents(), courseSaved.getStudents());
+        assertEquals(editedCourse.getTitle(), course.getTitle());
+        assertEquals(editedCourse.getDescription(), course.getDescription());
+        assertEquals(editedCourse.getStudents(), course.getStudents());
 
     }
 
@@ -103,26 +101,22 @@ public class CourseServiceImplTest {
 
         when(courseRepository.findById(course.getCode())).thenReturn(Optional.of(course));
 
-        Course courseSaved = courseService.getCourseByCode(course.getCode());
+        doNothing().when(courseRepository).delete(course);
 
-        doNothing().when(courseRepository).delete(courseSaved);
-
-        boolean deleted = courseService.deleteCourse(courseSaved.getCode());
+        boolean deleted = courseService.deleteCourse(course.getCode());
         assertEquals(deleted , Boolean.TRUE);
 
     }
 
     @Test
-    public void testDeleteStudentError(){
+    public void testDeleteCourseError(){
         Assertions.assertThrows(ResourceNotFoundException.class, ()-> {
             Course course = CourseMockData.mockCourse().builder().build();
-            Course courseSaved = courseService.getCourseByCode(course.getCode());
-            boolean deleted = courseService.deleteCourse(courseSaved.getCode());
+            boolean deleted = courseService.deleteCourse(course.getCode());
 
-            when(courseRepository.findById(5L)).thenReturn(Optional.of(course));
-            doNothing().when(courseRepository).delete(courseSaved);
+            doNothing().when(courseRepository).delete(course);
+            when(courseRepository.findById(5L)).thenThrow(ResourceNotFoundException.class);
 
-            assertEquals(deleted , Boolean.TRUE);
         });
     }
 }

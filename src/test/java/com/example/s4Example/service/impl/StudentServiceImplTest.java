@@ -11,13 +11,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.rules.ExpectedException;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 public class StudentServiceImplTest {
@@ -51,7 +51,7 @@ public class StudentServiceImplTest {
     public void testGetStudentById() throws ResourceNotFoundException {
         Student student = StudentMockData.mockStudent().builder().build();
 
-        when(studentRepository.findById(student.getId())).thenReturn(java.util.Optional.of(student));
+        when(studentRepository.findById(student.getId())).thenReturn(Optional.of(student));
 
         Student studentSaved = studentService.getStudentById(student.getId());
 
@@ -73,34 +73,30 @@ public class StudentServiceImplTest {
     public void testEditStudent() throws ResourceNotFoundException {
         Student student = StudentMockData.mockStudent().builder().build();
 
-        when(studentRepository.findById(student.getId())).thenReturn(java.util.Optional.of(student));
+        when(studentRepository.findById(student.getId())).thenReturn(Optional.of(student));
 
-        Student studentSaved = studentService.getStudentById(student.getId());
+        student.setFirstName("new first name");
+        student.setLastName("new last name");
+        student.setCourses(new ArrayList<>());
 
-        studentSaved.setFirstName("new first name");
-        studentSaved.setLastName("new last name");
-        studentSaved.setCourses(new ArrayList<>());
+        when(studentRepository.save(student)).thenReturn(student);
 
-        when(studentRepository.save(studentSaved)).thenReturn(studentSaved);
+        Student editedStudent = studentService.editStudent(student.getId() ,student);
 
-        Student editedStudent = studentService.editStudent(student.getId() ,studentSaved);
-
-        assertEquals(editedStudent.getFirstName(), studentSaved.getFirstName());
-        assertEquals(editedStudent.getLastName(), studentSaved.getLastName());
-        assertEquals(editedStudent.getCourses(), studentSaved.getCourses());
+        assertEquals(editedStudent.getFirstName(), student.getFirstName());
+        assertEquals(editedStudent.getLastName(), student.getLastName());
+        assertEquals(editedStudent.getCourses(), student.getCourses());
     }
 
     @Test
     public void testDeleteStudent() throws ResourceNotFoundException {
         Student student = StudentMockData.mockStudent().builder().build();
 
-        when(studentRepository.findById(student.getId())).thenReturn(java.util.Optional.of(student));
+        when(studentRepository.findById(student.getId())).thenReturn(Optional.of(student));
 
-        Student studentSaved = studentService.getStudentById(student.getId());
+        doNothing().when(studentRepository).delete(student);
 
-        doNothing().when(studentRepository).delete(studentSaved);
-
-        boolean deleted = studentService.deleteStudent(studentSaved.getId());
+        boolean deleted = studentService.deleteStudent(student.getId());
         assertEquals(deleted , Boolean.TRUE);
     }
 
@@ -108,13 +104,11 @@ public class StudentServiceImplTest {
     public void testDeleteStudentError(){
         Assertions.assertThrows(ResourceNotFoundException.class, ()-> {
             Student student = StudentMockData.mockStudent().builder().build();
-            Student studentSaved = studentService.getStudentById(student.getId());
-            boolean deleted = studentService.deleteStudent(studentSaved.getId());
+            boolean deleted = studentService.deleteStudent(student.getId());
 
-            when(studentRepository.findById(5L)).thenReturn(java.util.Optional.of(student));
-            doNothing().when(studentRepository).delete(studentSaved);
+            doNothing().when(studentRepository).delete(student);
+            when(studentRepository.findById(5L)).thenThrow(ResourceNotFoundException.class);
 
-            assertEquals(deleted , Boolean.TRUE);
         });
     }
 

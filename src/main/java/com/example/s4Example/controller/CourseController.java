@@ -5,14 +5,16 @@ import com.example.s4Example.exceptions.ResourceNotFoundException;
 import com.example.s4Example.model.Course;
 import com.example.s4Example.service.CourseService;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.validation.Valid;
 
-import com.example.s4Example.utils.ObjectMapperUtils;
+import lombok.NoArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@NoArgsConstructor
 @RequestMapping({"/api/v1"})
 public class CourseController {
     @Autowired
@@ -32,28 +35,30 @@ public class CourseController {
     @Autowired
     private ModelMapper mapper;
 
-    public CourseController() {
-    }
-
     @GetMapping({"/courses"})
-    public List<CourseDTO> getAllCourses() {
+    public ResponseEntity<List<CourseDTO>> getAllCourses() {
         List<Course> courses = this.courseService.getAllCourses();
-        ObjectMapperUtils mapper = new ObjectMapperUtils();
-        List<CourseDTO> response = mapper.mapAll(courses, CourseDTO.class );
-        return response;
+        List<CourseDTO> coursesDto = new ArrayList<>();
+        for (Course entity : courses) {
+            CourseDTO map = mapper.map(entity, CourseDTO.class);
+            coursesDto.add(map);
+        }
+        return new ResponseEntity<>(coursesDto, HttpStatus.OK);
     }
 
     @GetMapping({"/courses/{code}"})
     public ResponseEntity<CourseDTO> getCourseByCode(@PathVariable("code") Long code) throws ResourceNotFoundException {
         Course course = this.courseService.getCourseByCode(code);
-        return ResponseEntity.ok().body(mapper.map(course, CourseDTO.class));
+        CourseDTO body = mapper.map(course, CourseDTO.class);
+        return new ResponseEntity<>(body, HttpStatus.OK);
     }
 
     @PostMapping({"/courses"})
-    public CourseDTO createCourse(@Valid @RequestBody CourseDTO course) {
+    public ResponseEntity<CourseDTO> createCourse(@Valid @RequestBody CourseDTO course) {
         Course source = mapper.map(course, Course.class);
-        Course response = this.courseService.createCourse(source);
-        return mapper.map(response, CourseDTO.class);
+        Course result = this.courseService.createCourse(source);
+        CourseDTO body = mapper.map(result, CourseDTO.class);
+        return new ResponseEntity<>(body, HttpStatus.CREATED);
     }
 
     @PutMapping({"/courses/{code}"})
@@ -64,9 +69,9 @@ public class CourseController {
     }
 
     @DeleteMapping({"/courses/{code}"})
-    public Map<String, Boolean> deleteCourse(@PathVariable("code") Long code) throws ResourceNotFoundException {
+    public ResponseEntity<Map<String, Boolean>> deleteCourse(@PathVariable("code") Long code) throws ResourceNotFoundException {
         Map<String, Boolean> response = new HashMap();
         response.put("deleted" , this.courseService.deleteCourse(code) );
-        return response;
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

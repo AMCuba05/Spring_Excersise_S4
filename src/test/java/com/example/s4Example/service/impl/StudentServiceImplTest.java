@@ -3,22 +3,28 @@ package com.example.s4Example.service.impl;
 import com.example.s4Example.StudentMockData;
 import com.example.s4Example.exceptions.ResourceNotFoundException;
 import com.example.s4Example.model.Student;
-import org.junit.Before;
+import com.example.s4Example.repository.StudentRepository;
+import com.example.s4Example.service.StudentService;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.MockitoAnnotations.initMocks;
+import static org.mockito.Mockito.when;
 
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@ExtendWith(MockitoExtension.class)
 public class StudentServiceImplTest {
 
     @InjectMocks
-    private StudentServiceImpl studentService;
+    private StudentService studentService = new StudentServiceImpl();
 
-    @Before
-    public void before() {
-        initMocks(this);
-    }
+    @Mock
+    private StudentRepository studentRepository;
 
     @Test
     public void testGetAllStudents(){
@@ -26,68 +32,72 @@ public class StudentServiceImplTest {
         Student student1 = StudentMockData.mockStudent().builder().build();
         Student student2 = StudentMockData.mockStudent().builder().build();
 
-        studentService.createStudent(student);
-        studentService.createStudent(student1);
-        studentService.createStudent(student2);
+        List<Student> studentList = new ArrayList<>();
 
-        int studentsSaved = studentService.getAllStudents().size();
-        assertEquals(3,studentsSaved );
+        studentList.add(student);
+        studentList.add(student1);
+        studentList.add(student2);
 
+        when(studentRepository.findAll()).thenReturn(studentList);
+
+        List<Student> results = studentService.getAllStudents();
+        assertEquals(results.size() , studentList.size() );
+        assertEquals(results.get(0).getId() , studentList.get(0).getId());
     }
 
     @Test
     public void testGetStudentById() throws ResourceNotFoundException {
         Student student = StudentMockData.mockStudent().builder().build();
-        Student student1 = StudentMockData.mockStudent().builder().build();
-        Student student2 = StudentMockData.mockStudent().builder().build();
 
-        studentService.createStudent(student);
-        studentService.createStudent(student1);
-        studentService.createStudent(student2);
+        when(studentRepository.findById(student.getId())).thenReturn(java.util.Optional.of(student));
 
-        Student studentsSaved = studentService.getStudentById(student.getId());
-        Student studentsSaved1 = studentService.getStudentById(student1.getId());
-        Student studentsSaved2 = studentService.getStudentById(student2.getId());
+        Student studentSaved = studentService.getStudentById(student.getId());
 
-        assertEquals(studentsSaved.getId() ,student.getId());
-        assertEquals(studentsSaved1.getId() ,student1.getId());
-        assertEquals(studentsSaved2.getId() ,student2.getId());
-
-        studentService.deleteStudent(student.getId());
-        studentService.deleteStudent(student1.getId());
-        studentService.deleteStudent(student2.getId());
+        assertEquals(student.getId() ,studentSaved.getId());
     }
 
     @Test
-    public void testCreateStudent() throws ResourceNotFoundException {
+    public void testCreateStudent() {
         Student student = StudentMockData.mockStudent().builder().build();
-        studentService.createStudent(student);
-        int studentsSaved = studentService.getAllStudents().size();
-        assertEquals(1,studentsSaved );
-        studentService.deleteStudent(student.getId());
+
+        when(studentRepository.save(student)).thenReturn(student);
+
+        Student studentCreated = studentService.createStudent(student);
+
+        assertEquals(studentCreated.getId(), student.getId());
     }
 
     @Test
     public void testEditStudent() throws ResourceNotFoundException {
         Student student = StudentMockData.mockStudent().builder().build();
-        studentService.createStudent(student);
 
-        student.setLastName("EditedLastName");
-        student.setFirstName("EditedFirstName");
+        when(studentRepository.findById(student.getId())).thenReturn(java.util.Optional.of(student));
 
-        Student editedStudent = studentService.editStudent(student.getId(), student);
+        Student studentSaved = studentService.getStudentById(student.getId());
 
-        assertEquals(editedStudent.getFirstName(), student.getFirstName());
-        assertEquals(editedStudent.getLastName(), student.getLastName());
+        studentSaved.setFirstName("new first name");
+        studentSaved.setLastName("new last name");
+        studentSaved.setCourses(new ArrayList<>());
 
-        studentService.deleteStudent(student.getId());
+        when(studentRepository.save(studentSaved)).thenReturn(studentSaved);
+
+        Student editedStudent = studentService.createStudent(studentSaved);
+
+        assertEquals(editedStudent.getFirstName(), studentSaved.getFirstName());
+        assertEquals(editedStudent.getLastName(), studentSaved.getLastName());
+        assertEquals(editedStudent.getCourses(), studentSaved.getCourses());
     }
 
     @Test
     public void testDeleteStudent() throws ResourceNotFoundException {
         Student student = StudentMockData.mockStudent().builder().build();
-        studentService.createStudent(student);
-        Boolean deleted = studentService.deleteStudent(student.getId());
-        assertEquals( Boolean.TRUE, deleted);
+
+        when(studentRepository.findById(student.getId())).thenReturn(java.util.Optional.of(student));
+
+        Student studentSaved = studentService.getStudentById(student.getId());
+
+        studentRepository.delete(studentSaved);
+        boolean deleted = studentService.deleteStudent(studentSaved.getId());
+        assertEquals(deleted , Boolean.TRUE);
     }
 }

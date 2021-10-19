@@ -23,7 +23,7 @@ public class StudentServiceImpl implements StudentService {
 
     public Student getStudentById(Long studentId) throws ResourceNotFoundException {
         Student student = (Student)this.studentRepository.findById(studentId).orElseThrow(() -> {
-            return new ResourceNotFoundException("Student not found for id: " + studentId);
+            return new ResourceNotFoundException(String.format("Student not found for id: %s", studentId));
         });
         return student;
     }

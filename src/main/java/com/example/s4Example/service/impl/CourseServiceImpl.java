@@ -7,7 +7,6 @@ import java.util.List;
 
 import com.example.s4Example.service.CourseService;
 import lombok.NoArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,9 +17,6 @@ public class CourseServiceImpl implements CourseService {
     @Autowired
     private CourseRepository courseRepository;
 
-    @Autowired
-    private ModelMapper mapper;
-
     @Override
     public List<Course> getAllCourses() {
         return this.courseRepository.findAll();
@@ -29,7 +25,7 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public Course getCourseByCode(Long code) throws ResourceNotFoundException {
         Course course = (Course)this.courseRepository.findById(code).orElseThrow(() -> {
-            return new ResourceNotFoundException("Class not found for code" + code);
+            return new ResourceNotFoundException(String.format("Class not found for code %s", code));
         });
         return course;
     }
@@ -42,7 +38,7 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public Course editCourse(Long code, Course courseDetails) throws ResourceNotFoundException {
         Course course = (Course)this.courseRepository.findById(code).orElseThrow(() -> {
-            return new ResourceNotFoundException("Class not found for code" + code);
+            return new ResourceNotFoundException(String.format("Class not found for code %s", code));
         });
         course.setTitle(courseDetails.getTitle());
         course.setDescription(courseDetails.getDescription());
@@ -54,7 +50,7 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public Boolean deleteCourse(Long code) throws ResourceNotFoundException {
         Course course = (Course)this.courseRepository.findById(code).orElseThrow(() -> {
-            return new ResourceNotFoundException("Class not found for code" + code);
+            return new ResourceNotFoundException(String.format("Class not found for code %s", code));
         });
         this.courseRepository.delete(course);
         return Boolean.TRUE;

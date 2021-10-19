@@ -34,7 +34,7 @@ public class StudentServiceImpl implements StudentService {
 
     public Student editStudent(Long studentId, Student studentDetails) throws ResourceNotFoundException {
         Student student = (Student)this.studentRepository.findById(studentId).orElseThrow(() -> {
-            return new ResourceNotFoundException("Student not found for id: " + studentId);
+            return new ResourceNotFoundException(String.format("Student not found for id: %s", studentId));
         });
         student.setFirstName(studentDetails.getFirstName());
         student.setLastName(studentDetails.getLastName());
@@ -44,7 +44,7 @@ public class StudentServiceImpl implements StudentService {
 
     public Boolean deleteStudent(Long studentId) throws ResourceNotFoundException {
         Student student = (Student)this.studentRepository.findById(studentId).orElseThrow(() -> {
-            return new ResourceNotFoundException("Student not found for id: " + studentId);
+            return new ResourceNotFoundException(String.format("Student not found for id: " , studentId));
         });
         this.studentRepository.delete(student);
         return Boolean.TRUE;

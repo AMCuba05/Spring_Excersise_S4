@@ -5,11 +5,13 @@ import com.example.s4Example.exceptions.ResourceNotFoundException;
 import com.example.s4Example.model.Student;
 import com.example.s4Example.repository.StudentRepository;
 import com.example.s4Example.service.StudentService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.rules.ExpectedException;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -81,7 +83,7 @@ public class StudentServiceImplTest {
 
         when(studentRepository.save(studentSaved)).thenReturn(studentSaved);
 
-        Student editedStudent = studentService.createStudent(studentSaved);
+        Student editedStudent = studentService.editStudent(student.getId() ,studentSaved);
 
         assertEquals(editedStudent.getFirstName(), studentSaved.getFirstName());
         assertEquals(editedStudent.getLastName(), studentSaved.getLastName());
@@ -96,8 +98,24 @@ public class StudentServiceImplTest {
 
         Student studentSaved = studentService.getStudentById(student.getId());
 
-        studentRepository.delete(studentSaved);
+        doNothing().when(studentRepository).delete(studentSaved);
+
         boolean deleted = studentService.deleteStudent(studentSaved.getId());
         assertEquals(deleted , Boolean.TRUE);
     }
+
+    @Test
+    public void testDeleteStudentError(){
+        Assertions.assertThrows(ResourceNotFoundException.class, ()-> {
+            Student student = StudentMockData.mockStudent().builder().build();
+            Student studentSaved = studentService.getStudentById(student.getId());
+            boolean deleted = studentService.deleteStudent(studentSaved.getId());
+
+            when(studentRepository.findById(5L)).thenReturn(java.util.Optional.of(student));
+            doNothing().when(studentRepository).delete(studentSaved);
+
+            assertEquals(deleted , Boolean.TRUE);
+        });
+    }
+
 }

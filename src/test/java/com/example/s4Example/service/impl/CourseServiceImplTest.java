@@ -1,12 +1,17 @@
 package com.example.s4Example.service.impl;
 
 import com.example.s4Example.CourseMockData;
+import java.util.Optional;
+import com.example.s4Example.StudentMockData;
 import com.example.s4Example.exceptions.ResourceNotFoundException;
 import com.example.s4Example.model.Course;
+import com.example.s4Example.model.Student;
 import com.example.s4Example.repository.CourseRepository;
 import com.example.s4Example.service.CourseService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -49,7 +54,7 @@ public class CourseServiceImplTest {
     public void testGetCourseById() throws ResourceNotFoundException {
         Course course = CourseMockData.mockCourse().builder().build();
 
-        when(courseRepository.findById(course.getCode())).thenReturn(java.util.Optional.of(course));
+        when(courseRepository.findById(course.getCode())).thenReturn(Optional.of(course));
 
         Course courseSaved = courseService.getCourseByCode(course.getCode());
 
@@ -73,7 +78,7 @@ public class CourseServiceImplTest {
     public void testEditCourse() throws ResourceNotFoundException {
         Course course = CourseMockData.mockCourse().builder().build();
 
-        when(courseRepository.findById(course.getCode())).thenReturn(java.util.Optional.of(course));
+        when(courseRepository.findById(course.getCode())).thenReturn(Optional.of(course));
 
         Course courseSaved = courseService.getCourseByCode(course.getCode());
 
@@ -83,7 +88,7 @@ public class CourseServiceImplTest {
 
         when(courseRepository.save(courseSaved)).thenReturn(courseSaved);
 
-        Course editedCourse = courseService.createCourse(courseSaved);
+        Course editedCourse = courseService.editCourse( courseSaved.getCode(),courseSaved);
 
         assertEquals(editedCourse.getTitle(), courseSaved.getTitle());
         assertEquals(editedCourse.getDescription(), courseSaved.getDescription());
@@ -96,13 +101,28 @@ public class CourseServiceImplTest {
 
         Course course = CourseMockData.mockCourse().builder().build();
 
-        when(courseRepository.findById(course.getCode())).thenReturn(java.util.Optional.of(course));
+        when(courseRepository.findById(course.getCode())).thenReturn(Optional.of(course));
 
         Course courseSaved = courseService.getCourseByCode(course.getCode());
 
-        courseRepository.delete(courseSaved);
+        doNothing().when(courseRepository).delete(courseSaved);
+
         boolean deleted = courseService.deleteCourse(courseSaved.getCode());
         assertEquals(deleted , Boolean.TRUE);
 
+    }
+
+    @Test
+    public void testDeleteStudentError(){
+        Assertions.assertThrows(ResourceNotFoundException.class, ()-> {
+            Course course = CourseMockData.mockCourse().builder().build();
+            Course courseSaved = courseService.getCourseByCode(course.getCode());
+            boolean deleted = courseService.deleteCourse(courseSaved.getCode());
+
+            when(courseRepository.findById(5L)).thenReturn(Optional.of(course));
+            doNothing().when(courseRepository).delete(courseSaved);
+
+            assertEquals(deleted , Boolean.TRUE);
+        });
     }
 }

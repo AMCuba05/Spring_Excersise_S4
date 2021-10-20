@@ -24,9 +24,8 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public Course getCourseByCode(Long code) throws ResourceNotFoundException {
-        Course course = (Course)this.courseRepository.findById(code).orElseThrow(() -> {
-            return new ResourceNotFoundException(String.format("Class not found for code %s", code));
-        });
+        Course course = (Course)this.courseRepository.findById(code).orElseThrow(() ->
+                new ResourceNotFoundException(String.format("Class not found for code %s", code)));
         return course;
     }
 
@@ -37,9 +36,8 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public Course editCourse(Long code, Course courseDetails) throws ResourceNotFoundException {
-        Course course = (Course)this.courseRepository.findById(code).orElseThrow(() -> {
-            return new ResourceNotFoundException(String.format("Class not found for code %s", code));
-        });
+        Course course = (Course)this.courseRepository.findById(code).orElseThrow(() ->
+                new ResourceNotFoundException(String.format("Class not found for code %s", code)));
         course.setTitle(courseDetails.getTitle());
         course.setDescription(courseDetails.getDescription());
         course.setStudents(courseDetails.getStudents());
@@ -49,9 +47,8 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public Boolean deleteCourse(Long code) throws ResourceNotFoundException {
-        Course course = (Course)this.courseRepository.findById(code).orElseThrow(() -> {
-            return new ResourceNotFoundException(String.format("Class not found for code %s", code));
-        });
+        Course course = (Course)this.courseRepository.findById(code).orElseThrow(() ->
+                new ResourceNotFoundException(String.format("Class not found for code %s", code)));
         this.courseRepository.delete(course);
         return Boolean.TRUE;
     }

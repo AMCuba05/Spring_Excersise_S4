@@ -119,4 +119,27 @@ public class CourseServiceImplTest {
 
         });
     }
+
+    @Test
+    public void testEditCourseError(){
+        Assertions.assertThrows(ResourceNotFoundException.class, ()-> {
+            Course course = CourseMockData.mockCourse().builder().build();
+            course.setTitle("new title");
+            course.setDescription("new description");
+            course.setStudents(new ArrayList<>());
+            Course editedCourse = courseService.editCourse( course.getCode(),course);
+
+            when(courseRepository.findById(5L)).thenThrow(ResourceNotFoundException.class);
+        });
+    }
+
+    @Test
+    public void testGetCourseByCodeError(){
+        Assertions.assertThrows(ResourceNotFoundException.class, ()-> {
+            Course course = CourseMockData.mockCourse().builder().build();
+            Course courseSaved = courseService.getCourseByCode(course.getCode());
+
+            when(courseRepository.findById(course.getCode())).thenThrow(ResourceNotFoundException.class);
+        });
+    }
 }

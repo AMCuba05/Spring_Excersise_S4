@@ -112,4 +112,27 @@ public class StudentServiceImplTest {
         });
     }
 
+    @Test
+    public void testEditStudentError(){
+        Assertions.assertThrows(ResourceNotFoundException.class, ()-> {
+            Student student = StudentMockData.mockStudent().builder().build();
+            student.setFirstName("new first name");
+            student.setLastName("new last name");
+            student.setCourses(new ArrayList<>());
+            Student editStudent = studentService.editStudent( student.getId(),student);
+
+            when(studentRepository.findById(5L)).thenThrow(ResourceNotFoundException.class);
+        });
+    }
+
+    @Test
+    public void testGetStudentByIdError(){
+        Assertions.assertThrows(ResourceNotFoundException.class, ()-> {
+            Student student = StudentMockData.mockStudent().builder().build();
+            Student studentSaved = studentService.getStudentById(student.getId());
+
+            when(studentRepository.findById(student.getId())).thenThrow(ResourceNotFoundException.class);
+        });
+    }
+
 }

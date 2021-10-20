@@ -42,7 +42,7 @@ public class StudentServiceImpl implements StudentService {
 
     public Boolean deleteStudent(Long studentId) throws ResourceNotFoundException {
         Student student = (Student)this.studentRepository.findById(studentId).orElseThrow(() ->
-                new ResourceNotFoundException(String.format("Student not found for id: " , studentId)));
+                new ResourceNotFoundException(String.format("Student not found for id: %s" , studentId)));
         this.studentRepository.delete(student);
         return Boolean.TRUE;
     }

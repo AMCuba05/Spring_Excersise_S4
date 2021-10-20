@@ -117,7 +117,7 @@ public class StudentServiceImplTest {
             student.setFirstName("new first name");
             student.setLastName("new last name");
             student.setCourses(new ArrayList<>());
-            Student editStudent = studentService.editStudent( student.getId(),student);
+            Student editStudent = studentService.editStudent( 5L,student);
 
             when(studentRepository.findById(5L)).thenThrow(ResourceNotFoundException.class);
         });

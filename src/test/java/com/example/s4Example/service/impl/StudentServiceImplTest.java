@@ -102,19 +102,17 @@ public class StudentServiceImplTest {
 
     @Test
     public void testDeleteStudentError(){
-        Assertions.assertThrows(ResourceNotFoundException.class, ()-> {
-            Student student = StudentMockData.mockStudent().builder().build();
-            boolean deleted = studentService.deleteStudent(student.getId());
-
-            doNothing().when(studentRepository).delete(student);
+        Exception exception = assertThrows(ResourceNotFoundException.class, ()-> {
+            boolean deleted = studentService.deleteStudent(5L);
             when(studentRepository.findById(5L)).thenThrow(ResourceNotFoundException.class);
-
         });
+
+        assertEquals("Student not found for id: 5", exception.getMessage());
     }
 
     @Test
     public void testEditStudentError(){
-        Assertions.assertThrows(ResourceNotFoundException.class, ()-> {
+        Exception exception = assertThrows(ResourceNotFoundException.class, ()-> {
             Student student = StudentMockData.mockStudent().builder().build();
             student.setFirstName("new first name");
             student.setLastName("new last name");
@@ -123,16 +121,18 @@ public class StudentServiceImplTest {
 
             when(studentRepository.findById(5L)).thenThrow(ResourceNotFoundException.class);
         });
+
+        assertEquals("Student not found for id: 5", exception.getMessage());
     }
 
     @Test
     public void testGetStudentByIdError(){
-        Assertions.assertThrows(ResourceNotFoundException.class, ()-> {
-            Student student = StudentMockData.mockStudent().builder().build();
-            Student studentSaved = studentService.getStudentById(student.getId());
-
-            when(studentRepository.findById(student.getId())).thenThrow(ResourceNotFoundException.class);
+        Exception exception = assertThrows(ResourceNotFoundException.class, ()-> {
+            Student studentSaved = studentService.getStudentById(5L);
+            when(studentRepository.findById(5L)).thenThrow(ResourceNotFoundException.class);
         });
+
+        assertEquals("Student not found for id: 5", exception.getMessage());
     }
 
 }

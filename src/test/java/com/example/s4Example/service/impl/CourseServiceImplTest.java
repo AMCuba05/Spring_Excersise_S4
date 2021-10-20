@@ -2,10 +2,8 @@ package com.example.s4Example.service.impl;
 
 import com.example.s4Example.CourseMockData;
 import java.util.Optional;
-import com.example.s4Example.StudentMockData;
 import com.example.s4Example.exceptions.ResourceNotFoundException;
 import com.example.s4Example.model.Course;
-import com.example.s4Example.model.Student;
 import com.example.s4Example.repository.CourseRepository;
 import com.example.s4Example.service.CourseService;
 import org.junit.jupiter.api.Assertions;
@@ -110,36 +108,35 @@ public class CourseServiceImplTest {
 
     @Test
     public void testDeleteCourseError(){
-        Assertions.assertThrows(ResourceNotFoundException.class, ()-> {
-            Course course = CourseMockData.mockCourse().builder().build();
-            boolean deleted = courseService.deleteCourse(course.getCode());
-
-            doNothing().when(courseRepository).delete(course);
+        Exception exception = assertThrows(ResourceNotFoundException.class, ()-> {
+            boolean deleted = courseService.deleteCourse(5L);
             when(courseRepository.findById(5L)).thenThrow(ResourceNotFoundException.class);
-
         });
+
+        assertEquals("Class not found for code 5", exception.getMessage());
     }
 
     @Test
     public void testEditCourseError(){
-        Assertions.assertThrows(ResourceNotFoundException.class, ()-> {
+        Exception exception = assertThrows(ResourceNotFoundException.class, ()-> {
             Course course = CourseMockData.mockCourse().builder().build();
             course.setTitle("new title");
             course.setDescription("new description");
             course.setStudents(new ArrayList<>());
-            Course editedCourse = courseService.editCourse( course.getCode(),course);
+            Course editedCourse = courseService.editCourse( 5L,course);
 
             when(courseRepository.findById(5L)).thenThrow(ResourceNotFoundException.class);
         });
+
+        assertEquals("Class not found for code 5", exception.getMessage());
     }
 
     @Test
     public void testGetCourseByCodeError(){
-        Assertions.assertThrows(ResourceNotFoundException.class, ()-> {
-            Course course = CourseMockData.mockCourse().builder().build();
-            Course courseSaved = courseService.getCourseByCode(course.getCode());
-
-            when(courseRepository.findById(course.getCode())).thenThrow(ResourceNotFoundException.class);
+        Exception exception = assertThrows(ResourceNotFoundException.class, ()-> {
+            Course courseSaved = courseService.getCourseByCode(5L);
+            when(courseRepository.findById(5L)).thenThrow(ResourceNotFoundException.class);
         });
+        assertEquals("Class not found for code 5", exception.getMessage());
     }
 }
